@@ -7,9 +7,9 @@ import com.food.ordering.system.order.service.domain.vo.OrderItemId
 import com.food.ordering.system.order.service.domain.vo.StreetAddress
 import com.food.ordering.system.order.service.domain.vo.TrackingId
 import java.util.*
+import kotlin.collections.ArrayList
 
 class Order
-
 private constructor(
     id: OrderId,
     val customerId: CustomerId,
@@ -20,7 +20,7 @@ private constructor(
 
     var trackingId: TrackingId?,
     var orderStatus: OrderStatus,
-    var failureMessages: List<String> = emptyList()
+    val failureMessages: MutableList<String> = ArrayList()
 
 ) : AggregateRoot<OrderId>(id) {
 
@@ -37,16 +37,51 @@ private constructor(
             .reduce { left, right -> left.add(right) }
     }
 
+    fun pay() {
+        if (orderStatus != OrderStatus.PENDING) {
+            throw OrderDomainException("Order is not in correct state for pay operation")
+        }
+        orderStatus = OrderStatus.PAID
+    }
+
+    fun approve() {
+        if (orderStatus != OrderStatus.PAID) {
+            throw OrderDomainException("Order is not in correct state for approve operation")
+        }
+        orderStatus = OrderStatus.APPROVED
+    }
+
+    fun initCancle(failureMessages: List<String>) {
+        if (orderStatus != OrderStatus.PAID) {
+            throw OrderDomainException("Order is not in correct state for initCancel operation")
+
+        }
+        orderStatus = OrderStatus.CANCELLING
+        updateFailureMessages(failureMessages)
+    }
+
+    fun cancle(failureMessages: List<String>) {
+        if (!(orderStatus == OrderStatus.PENDING && orderStatus == OrderStatus.CANCELLING)) {
+            throw OrderDomainException("Order is not in correct state for cancel operation")
+        }
+        orderStatus = OrderStatus.CANCELED
+        updateFailureMessages(failureMessages)
+    }
+
+    private fun updateFailureMessages(failureMessages: List<String>) {
+        this.failureMessages.addAll(failureMessages.filter { it.isNotEmpty() })
+    }
+
     companion object {
 
         fun create(
-            orderItems:List<OrderItem>,
+            orderItems: List<OrderItem>,
             customerId: CustomerId,
             restaurantId: RestaurantId,
             deliveryAddress: StreetAddress,
-            ): Order {
+        ): Order {
 
-            val orderId =  OrderId(UUID.randomUUID())
+            val orderId = OrderId(UUID.randomUUID())
             initOrderItems(orderItems, orderId)
 
             return Order(
@@ -64,7 +99,7 @@ private constructor(
             var startId = 1L
             for (orderItem in orderItems) {
                 orderItem.init(OrderItemId(startId), orderId)
-                startId ++
+                startId++
             }
         }
     }
