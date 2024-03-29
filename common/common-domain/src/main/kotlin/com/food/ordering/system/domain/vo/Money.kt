@@ -5,9 +5,12 @@ import java.math.BigDecimal
 data class Money (
     val amount: BigDecimal
 ) {
+    companion object {
+        val ZERO = Money(BigDecimal.ZERO)
+    }
 
     fun isGreaterThanZero(): Boolean {
-        return this.amount > BigDecimal.ZERO
+        return this.amount > ZERO.amount
     }
 
     fun isGreaterThan(money: Money): Boolean {
