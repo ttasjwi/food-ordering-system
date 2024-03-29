@@ -7,36 +7,94 @@ import com.food.ordering.system.order.service.domain.vo.OrderItemId
 import com.food.ordering.system.order.service.domain.vo.StreetAddress
 import com.food.ordering.system.order.service.domain.vo.TrackingId
 import java.util.*
-import kotlin.collections.ArrayList
 
 class Order
 private constructor(
     id: OrderId,
     val customerId: CustomerId,
+    val orderItems: List<OrderItem>,
+    val price: Money,
     val restaurantId: RestaurantId,
     val deliveryAddress: StreetAddress,
 
-    val orderItems: List<OrderItem>,
-
-    var trackingId: TrackingId?,
+    var trackingId: TrackingId,
     var orderStatus: OrderStatus,
-    val failureMessages: MutableList<String> = ArrayList()
-
+    val failureMessages: MutableList<String> = mutableListOf(),
 ) : AggregateRoot<OrderId>(id) {
 
-    val price: Money
+    companion object {
 
-    init {
-        this.price = calculatePrice()
-    }
+        /**
+         * 주문 생성
+         */
+        fun create(
+            customerId: CustomerId,
+            orderItems: List<OrderItem>,
+            price: Money,
+            restaurantId: RestaurantId,
+            deliveryAddress: StreetAddress,
+        ): Order {
 
-    private fun calculatePrice(): Money {
-        return orderItems.map {
-            it.subTotal
+            val orderId = OrderId(UUID.randomUUID())
+            initOrderItems(orderItems, orderId)
+
+            return Order(
+                id = orderId,
+                customerId = customerId,
+                orderItems = orderItems,
+                price = price,
+                restaurantId = restaurantId,
+                deliveryAddress = deliveryAddress,
+                trackingId = TrackingId(UUID.randomUUID()),
+                orderStatus = OrderStatus.PENDING,
+            )
         }
-            .reduce { left, right -> left.add(right) }
+
+        private fun initOrderItems(orderItems: List<OrderItem>, orderId: OrderId) {
+            var startId = 1L
+            for (orderItem in orderItems) {
+                orderItem.initialize(OrderItemId(startId), orderId)
+                startId++
+            }
+        }
     }
 
+    /**
+     * 검증
+     */
+    fun validate() {
+        validateTotalPrice()
+        validateItemsPrice()
+    }
+
+    private fun validateTotalPrice() {
+        if (!price.isGreaterThanZero()) {
+            throw OrderDomainException("Total order price must be grater than zero!")
+        }
+    }
+
+    private fun validateItemsPrice() {
+        val orderItemsTotal = orderItems
+            .map {
+                validateItemPrice(it)
+                it.subTotal
+            }
+            .reduce { left, right -> left.add(right) }
+
+        if (price != orderItemsTotal) {
+            throw OrderDomainException("Total Price(${price.amount}) is not equal to Order Items total(${orderItemsTotal})!")
+        }
+    }
+
+    private fun validateItemPrice(orderItem: OrderItem) {
+        if (!orderItem.isPriceValid()) {
+            throw OrderDomainException("Order Item Price(${orderItem.price.amount}) is not valid for product ${orderItem.product.id!!.value}")
+        }
+    }
+
+    /**
+     * 결제
+     */
     fun pay() {
         if (orderStatus != OrderStatus.PENDING) {
             throw OrderDomainException("Order is not in correct state for pay operation")
@@ -51,7 +109,7 @@ private constructor(
         orderStatus = OrderStatus.APPROVED
     }
 
-    fun initCancle(failureMessages: List<String>) {
+    fun initCancel(failureMessages: List<String>) {
         if (orderStatus != OrderStatus.PAID) {
             throw OrderDomainException("Order is not in correct state for initCancel operation")
 
@@ -60,7 +118,7 @@ private constructor(
         updateFailureMessages(failureMessages)
     }
 
-    fun cancle(failureMessages: List<String>) {
+    fun cancel(failureMessages: List<String>) {
         if (!(orderStatus == OrderStatus.PENDING && orderStatus == OrderStatus.CANCELLING)) {
             throw OrderDomainException("Order is not in correct state for cancel operation")
         }
@@ -70,38 +128,6 @@ private constructor(
 
     private fun updateFailureMessages(failureMessages: List<String>) {
         this.failureMessages.addAll(failureMessages.filter { it.isNotEmpty() })
-    }
-
-    companion object {
-
-        fun create(
-            orderItems: List<OrderItem>,
-            customerId: CustomerId,
-            restaurantId: RestaurantId,
-            deliveryAddress: StreetAddress,
-        ): Order {
-
-            val orderId = OrderId(UUID.randomUUID())
-            initOrderItems(orderItems, orderId)
-
-            return Order(
-                id = orderId,
-                trackingId = TrackingId(UUID.randomUUID()),
-                orderStatus = OrderStatus.PENDING,
-                orderItems = orderItems,
-                customerId = customerId,
-                restaurantId = restaurantId,
-                deliveryAddress = deliveryAddress,
-            )
-        }
-
-        private fun initOrderItems(orderItems: List<OrderItem>, orderId: OrderId) {
-            var startId = 1L
-            for (orderItem in orderItems) {
-                orderItem.init(OrderItemId(startId), orderId)
-                startId++
-            }
-        }
     }
 
 }
