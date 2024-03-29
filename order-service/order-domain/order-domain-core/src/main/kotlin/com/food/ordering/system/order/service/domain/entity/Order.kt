@@ -10,14 +10,14 @@ import java.util.*
 
 class Order
 private constructor(
-    id: OrderId,
+    id: OrderId? = null,
     val customerId: CustomerId,
     val orderItems: List<OrderItem>,
     val price: Money,
     val restaurantId: RestaurantId,
     val deliveryAddress: StreetAddress,
 
-    var trackingId: TrackingId,
+    var trackingId: TrackingId? = null,
     var orderStatus: OrderStatus,
     val failureMessages: MutableList<String> = mutableListOf(),
 ) : AggregateRoot<OrderId>(id) {
@@ -35,28 +35,16 @@ private constructor(
             deliveryAddress: StreetAddress,
         ): Order {
 
-            val orderId = OrderId(UUID.randomUUID())
-            initOrderItems(orderItems, orderId)
-
             return Order(
-                id = orderId,
                 customerId = customerId,
                 orderItems = orderItems,
                 price = price,
                 restaurantId = restaurantId,
                 deliveryAddress = deliveryAddress,
-                trackingId = TrackingId(UUID.randomUUID()),
                 orderStatus = OrderStatus.PENDING,
             )
         }
 
-        private fun initOrderItems(orderItems: List<OrderItem>, orderId: OrderId) {
-            var startId = 1L
-            for (orderItem in orderItems) {
-                orderItem.initialize(OrderItemId(startId), orderId)
-                startId++
-            }
-        }
     }
 
     /**
@@ -89,6 +77,20 @@ private constructor(
     private fun validateItemPrice(orderItem: OrderItem) {
         if (!orderItem.isPriceValid()) {
             throw OrderDomainException("Order Item Price(${orderItem.price.amount}) is not valid for product ${orderItem.product.id!!.value}")
+        }
+    }
+
+    fun initialize() {
+        super.id = OrderId(UUID.randomUUID())
+        trackingId = TrackingId(UUID.randomUUID())
+        initializeOrderItems()
+    }
+
+    private fun initializeOrderItems() {
+        var startId = 1L
+        for (orderItem in orderItems) {
+            orderItem.initialize(OrderItemId(startId), id!!)
+            startId++
         }
     }
 
@@ -129,5 +131,6 @@ private constructor(
     private fun updateFailureMessages(failureMessages: List<String>) {
         this.failureMessages.addAll(failureMessages.filter { it.isNotEmpty() })
     }
+
 
 }
