@@ -8,4 +8,10 @@ class Product(
     id: ProductId,
     var name: String,
     var price: Money
-) : BaseEntity<ProductId>(id)
+) : BaseEntity<ProductId>(id) {
+
+    fun updateWithConfirmedNameAndPrice(name: String, price: Money) {
+        this.name = name
+        this.price = price
+    }
+}

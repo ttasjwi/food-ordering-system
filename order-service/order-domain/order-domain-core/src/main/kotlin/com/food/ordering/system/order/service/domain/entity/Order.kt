@@ -94,6 +94,20 @@ private constructor(
         }
     }
 
+    fun updateProductsWithCurrentInformation(restaurant: Restaurant) {
+        // 생각거리 : 시간복잡도 O(N2)
+
+        orderItems.forEach { orderItem ->
+            restaurant.products.forEach {restaurantProduct ->
+                val currentOrderProduct = orderItem.product
+
+                if (currentOrderProduct == restaurantProduct) {
+                    currentOrderProduct.updateWithConfirmedNameAndPrice(restaurantProduct.name, restaurantProduct.price)
+                }
+            }
+        }
+    }
+
     /**
      * 결제
      */
