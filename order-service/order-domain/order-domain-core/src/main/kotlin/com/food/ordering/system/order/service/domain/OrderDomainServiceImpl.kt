@@ -14,6 +14,10 @@ internal class OrderDomainServiceImpl : OrderDomainService {
 
     private val log = getLogger(javaClass)
 
+    companion object {
+        private const val UTC = "UTC"
+    }
+
     override fun validateAndInitOrder(order: Order, restaurant: Restaurant): OrderCreatedEvent {
         checkRestaurantIsActivated(restaurant)
         order.updateProductsWithCurrentInformation(restaurant)
@@ -21,13 +25,13 @@ internal class OrderDomainServiceImpl : OrderDomainService {
         order.initialize()
 
         log.info { "Order with id: ${order.id!!.value} is initiated" }
-        return OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of("UTC")))
+        return OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of(UTC)))
     }
 
     override fun payOrder(order: Order): OrderPaidEvent {
         order.pay()
         log.info { "Order with id: ${order.id!!.value} is paid" }
-        return OrderPaidEvent(order, ZonedDateTime.now(ZoneId.of("UTC")))
+        return OrderPaidEvent(order, ZonedDateTime.now(ZoneId.of(UTC)))
     }
 
     override fun approveOrder(order: Order) {
@@ -39,7 +43,7 @@ internal class OrderDomainServiceImpl : OrderDomainService {
         order.initCancel(failureMessages)
         log.info { "Order payment is cancelling for order id: ${order.id!!.value}" }
 
-        return OrderCancelledEvent(order, ZonedDateTime.now(ZoneId.of("UTC")))
+        return OrderCancelledEvent(order, ZonedDateTime.now(ZoneId.of(UTC)))
     }
 
     override fun cancelOrder(order: Order, failureMessages: List<String>) {
