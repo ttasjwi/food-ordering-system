@@ -25,19 +25,26 @@ internal class OrderDomainServiceImpl : OrderDomainService {
     }
 
     override fun payOrder(order: Order): OrderPaidEvent {
-        TODO("Not yet implemented")
+        order.pay()
+        log.info { "Order with id: ${order.id!!.value} is paid" }
+        return OrderPaidEvent(order, ZonedDateTime.now(ZoneId.of("UTC")))
     }
 
     override fun approveOrder(order: Order) {
-        TODO("Not yet implemented")
+        order.approve()
+        log.info { "Order with id: ${order.id!!.value} is approved" }
     }
 
     override fun cancelOrderPayment(order: Order, failureMessages: List<String>): OrderCancelledEvent {
-        TODO("Not yet implemented")
+        order.initCancel(failureMessages)
+        log.info { "Order payment is cancelling for order id: ${order.id!!.value}" }
+
+        return OrderCancelledEvent(order, ZonedDateTime.now(ZoneId.of("UTC")))
     }
 
     override fun cancelOrder(order: Order, failureMessages: List<String>) {
-        TODO("Not yet implemented")
+        order.cancel(failureMessages)
+        log.info { "Order with id: ${order.id!!.value} is cancelled" }
     }
 
     private fun checkRestaurantIsActivated(restaurant: Restaurant) {
