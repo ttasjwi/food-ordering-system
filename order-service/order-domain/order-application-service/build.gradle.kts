@@ -7,3 +7,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework:spring-tx")
 }
+
+allOpen {
+    annotation("org.springframework.boot.autoconfigure.SpringBootApplication")
+}

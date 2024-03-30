@@ -10,7 +10,7 @@ import com.food.ordering.system.support.logging.getLogger
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-internal class OrderDomainServiceImpl : OrderDomainService {
+class OrderDomainServiceImpl : OrderDomainService {
 
     private val log = getLogger(javaClass)
 
@@ -52,7 +52,7 @@ internal class OrderDomainServiceImpl : OrderDomainService {
     }
 
     private fun checkRestaurantIsActivated(restaurant: Restaurant) {
-        if (restaurant.isActive) {
+        if (!restaurant.isActive) {
             throw OrderDomainException("Restaurant with id ${restaurant.id!!.value} is currently not active!")
         }
     }

@@ -70,7 +70,7 @@ private constructor(
             .reduce { left, right -> left.add(right) }
 
         if (price != orderItemsTotal) {
-            throw OrderDomainException("Total Price(${price.amount}) is not equal to Order Items total(${orderItemsTotal})!")
+            throw OrderDomainException("Total price(${price.amount}) is not equal to Order Items total(${orderItemsTotal.amount})!")
         }
     }
 
@@ -102,7 +102,7 @@ private constructor(
                 val currentOrderProduct = orderItem.product
 
                 if (currentOrderProduct == restaurantProduct) {
-                    currentOrderProduct.updateWithConfirmedNameAndPrice(restaurantProduct.name, restaurantProduct.price)
+                    currentOrderProduct.updateWithConfirmedNameAndPrice(restaurantProduct.name!!, restaurantProduct.price!!)
                 }
             }
         }

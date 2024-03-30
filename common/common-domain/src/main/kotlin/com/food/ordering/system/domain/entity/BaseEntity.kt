@@ -1,10 +1,12 @@
 package com.food.ordering.system.domain.entity
 
 abstract class BaseEntity<ID> (
-    id: ID? = null
+    var id: ID? = null
 ) {
-    var id: ID? = id
-        protected set
+
+    fun initId(id: ID) {
+        this.id = id
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
