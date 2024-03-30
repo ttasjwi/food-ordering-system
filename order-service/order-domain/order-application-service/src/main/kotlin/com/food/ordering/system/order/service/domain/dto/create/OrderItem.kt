@@ -17,5 +17,5 @@ class OrderItem (
     val price: BigDecimal?,
 
     @NotNull
-    val subTotal: BigDecimal,
+    val subTotal: BigDecimal?,
 )
