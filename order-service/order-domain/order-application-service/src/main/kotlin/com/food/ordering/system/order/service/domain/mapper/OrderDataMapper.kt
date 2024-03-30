@@ -7,6 +7,7 @@ import com.food.ordering.system.domain.vo.RestaurantId
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderCommand
 import com.food.ordering.system.order.service.domain.dto.create.CreateOrderResponse
 import com.food.ordering.system.order.service.domain.dto.create.OrderAddress
+import com.food.ordering.system.order.service.domain.dto.track.TrackOrderResponse
 import com.food.ordering.system.order.service.domain.entity.Order
 import com.food.ordering.system.order.service.domain.entity.OrderItem
 import com.food.ordering.system.order.service.domain.entity.Product
@@ -40,6 +41,14 @@ class OrderDataMapper {
             orderTrackingId = order.trackingId!!.value,
             orderStatus = order.orderStatus,
             message = message,
+        )
+    }
+
+    fun orderToTrackOrderResponse(order: Order): TrackOrderResponse {
+        return TrackOrderResponse(
+            orderTrackingId = order.trackingId!!.value,
+            orderStatus = order.orderStatus,
+            failureMessages = order.failureMessages
         )
     }
 
