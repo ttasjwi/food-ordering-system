@@ -25,7 +25,9 @@ class OrderCreateCommandHandler(
 
     private val restaurantRepository: RestaurantRepository,
 
-    private val orderDataMapper: OrderDataMapper
+    private val orderDataMapper: OrderDataMapper,
+
+    private val applicationDomainEventPublisher: ApplicationDomainEventPublisher
 ) {
 
     private val log = getLogger(javaClass)
@@ -41,6 +43,7 @@ class OrderCreateCommandHandler(
         log.info { "Order is created with id: ${savedOrder.id!!.value}" }
         val createOrderResponse = orderDataMapper.orderToCreateOrderResponse(savedOrder,  "Order created successfully")
 
+        applicationDomainEventPublisher.publish(orderCreatedEvent)
         return createOrderResponse
     }
 
@@ -73,6 +76,5 @@ class OrderCreateCommandHandler(
         }
         return findRestaurant
     }
-
 
 }
