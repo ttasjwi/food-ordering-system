@@ -9,5 +9,5 @@ include(
     "order-service:order-application",
     "order-service:order-data-access",
     "order-service:order-messaging",
-    "order-service:order-container"
+    "order-service:order-container",
 )
