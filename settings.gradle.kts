@@ -10,4 +10,8 @@ include(
     "order-service:order-data-access",
     "order-service:order-messaging",
     "order-service:order-container",
+    "infrastructure:kafka:kafka-producer",
+    "infrastructure:kafka:kafka-consumer",
+    "infrastructure:kafka:kafka-model",
+    "infrastructure:kafka:kafka-config-data"
 )
