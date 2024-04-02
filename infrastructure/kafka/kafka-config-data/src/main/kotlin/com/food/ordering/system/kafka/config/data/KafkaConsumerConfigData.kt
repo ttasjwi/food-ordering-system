@@ -6,19 +6,19 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties(prefix = "kafka-consumer-config")
 data class KafkaConsumerConfigData (
-    private val keyDeserializer: String? = null,
-    private val valueDeserializer: String? = null,
-    private val autoOffsetReset: String? = null,
-    private val specificAvroReaderKey: String? = null,
-    private val specificAvroReader: String? = null,
-    private val batchListener: Boolean? = null,
-    private val autoStartup: Boolean? = null,
-    private val concurrencyLevel: Int? = null,
-    private val sessionTimeoutMs: Int? = null,
-    private val heartbeatIntervalMs: Int? = null,
-    private val maxPollIntervalMs: Int? = null,
-    private val pollTimeoutMs: Long? = null,
-    private val maxPollRecords: Int? = null,
-    private val maxPartitionFetchBytesDefault: Int? = null,
-    private val maxPartitionFetchBytesBoostFactor: Int? = null
+    val keyDeserializer: String? = null,
+    val valueDeserializer: String? = null,
+    val autoOffsetReset: String? = null,
+    val specificAvroReaderKey: String? = null,
+    val specificAvroReader: String? = null,
+    val batchListener: Boolean? = null,
+    val autoStartup: Boolean? = null,
+    val concurrencyLevel: Int? = null,
+    val sessionTimeoutMs: Int? = null,
+    val heartbeatIntervalMs: Int? = null,
+    val maxPollIntervalMs: Int? = null,
+    val pollTimeoutMs: Long? = null,
+    val maxPollRecords: Int? = null,
+    val maxPartitionFetchBytesDefault: Int? = null,
+    val maxPartitionFetchBytesBoostFactor: Int? = null
 )
