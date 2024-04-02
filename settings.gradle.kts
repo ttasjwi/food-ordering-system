@@ -15,3 +15,10 @@ include(
     "infrastructure:kafka:kafka-model",
     "infrastructure:kafka:kafka-config-data"
 )
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}

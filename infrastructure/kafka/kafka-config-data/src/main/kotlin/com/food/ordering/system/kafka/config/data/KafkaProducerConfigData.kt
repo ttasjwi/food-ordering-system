@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties(prefix = "kafka-producer-config")
 data class KafkaProducerConfigData(
-    private val keySerializerClass: String? = null,
-    private val valueSerializerClass: String? = null,
-    private val compressionType: String? = null,
-    private val acks: String? = null,
-    private val batchSize: Int? = null,
-    private val batchSizeBoostFactor: Int? = null,
-    private val lingerMs: Int? = null,
-    private val requestTimeoutMs: Int? = null,
-    private val retryCount: Int? = null
+    val keySerializerClass: String? = null,
+    val valueSerializerClass: String? = null,
+    val compressionType: String? = null,
+    val acks: String? = null,
+    val batchSize: Int? = null,
+    val batchSizeBoostFactor: Int? = null,
+    val lingerMs: Int? = null,
+    val requestTimeoutMs: Int? = null,
+    val retryCount: Int? = null
 )
