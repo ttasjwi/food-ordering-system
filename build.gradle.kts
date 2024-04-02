@@ -39,6 +39,7 @@ subprojects {
 
 	dependencies {
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
+		implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 		testImplementation("org.springframework.boot:spring-boot-starter-test")
 		testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 	}
